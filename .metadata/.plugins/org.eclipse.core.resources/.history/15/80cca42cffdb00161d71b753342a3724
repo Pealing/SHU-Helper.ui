@@ -1,0 +1,24 @@
+package shuhelper.ui;
+import javax.swing.*;
+
+public class Login {
+	public static void main(String[] args)
+	{
+		// 确保一个漂亮的外观风格
+		JFrame.setDefaultLookAndFeelDecorated(true);
+
+		// 创建及设置窗口
+		JFrame frame = new JFrame("SHU-Helper Login");
+		frame.setLocationRelativeTo(null);
+		frame.setSize(600 , 500);
+		frame.setResizable(true);
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JLabel label = new JLabel("学号");
+		label.setHorizontalAlignment(400);
+		frame.setVisible(true);
+		frame.getContentPane().add(label);
+		frame.setVisible(true);
+	}
+
+}
