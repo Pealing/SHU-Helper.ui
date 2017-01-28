@@ -18,12 +18,9 @@ public class shuhelpapp extends Application{
 	@Override
 	public void start(Stage stage) throws Exception
 	{
-		Parent root = FXMLLoader.load(getClass().getResource("LoginFrame.fxml"));
-		Scene scene = new Scene(root,600,400);
-		stage.initStyle(StageStyle.DECORATED);
-		stage.setScene(scene);
-        stage.setTitle("SHU-Helper_Login");
-        stage.show();
+		WindowFrame Login = new WindowFrame("LoginFrame");
+		Login.Start();
+		Login.SetTitle("SHU-Helper_Login");
 	}
 
 }
