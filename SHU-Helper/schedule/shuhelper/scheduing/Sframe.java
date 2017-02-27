@@ -52,6 +52,9 @@ public class Sframe extends JFrame{
 	JComboBox campus = null;
 	Object [][]courseData=new Object[13][5];
 	Object [][]data=null;
+	String[][] courseTable=new String[13][5];
+	CourseTable conflict=new CourseTable();
+	
 	public void Init(){
 		frame = new JFrame("ÅÅ¿ÎÄ£¿é");
 		frame.setLayout(null);
@@ -193,9 +196,23 @@ public class Sframe extends JFrame{
 			// TODO Auto-generated method stub
 			courses=new ArrayList<String[]>();
 			String [][] strings = new String[20][2];
-			
+			String [][] str = new String[20][13];
 			for(int i=0;i<Schedule.courseSize();i++){
 				if((boolean) table.getValueAt(i, 13)){
+					for(int k=0;k<13;k++){
+						str[j][k] = (String) table.getValueAt(i, k);
+					}
+					if(conflict.pickClassTime(str[j][5]).equals("¿ÎÊ±³åÍ»£¡")){
+						continue;
+					}
+					//±£´æ¿Î±í
+					for(int r=0;r<13;r++){
+						for(int c=0;c<5;c++){
+							if(conflict.getCourseTable().getElement(r, c)==1){
+								courseTable[r][c]=(String) table.getValueAt(i, 1);
+							}
+						}
+					}
 					strings[j][0] = (String) table.getValueAt(i, 0);
 					strings[j][1] = (String) table.getValueAt(i, 3);
 					j++;		
@@ -272,14 +289,12 @@ public class Sframe extends JFrame{
 		font.setHorizontalAlignment(JLabel.CENTER);
 		table.setDefaultRenderer(Object.class, font);
 		fitTableColumns(table);
-		System.out.println(tableWidth);
 		//scrollPane = new JScrollPane();
 		//scrollPane.removeAll();
 		scrollPane.setViewportView(table);
 		scrollPane.repaint();
 		scrollPane.setBounds(20, 280, tableWidth, tableHeigth);
 		frame.validate();
-		System.out.println(tableHeigth);
 		frame.add(scrollPane);
 	}
 	

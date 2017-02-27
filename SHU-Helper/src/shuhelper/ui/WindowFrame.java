@@ -10,6 +10,7 @@ public class WindowFrame {
 	Controller controller;
 	String FrameName;
 	Stage stage;
+	Scene scene;
 	boolean istransparent;
 	private double height,weight;
 	
@@ -25,7 +26,7 @@ public class WindowFrame {
 	{
 		FXMLLoader fxmlloader = new FXMLLoader(getClass().getResource(FrameName));
 		Parent root = fxmlloader.load();
-		Scene scene = new Scene(root,height,weight);
+		scene = new Scene(root,height,weight);
 		controller = fxmlloader.getController(); 
 		controller.setStage(stage);
 	    controller.setScene(scene);

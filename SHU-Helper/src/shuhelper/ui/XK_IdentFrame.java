@@ -82,7 +82,18 @@ public class XK_IdentFrame extends Controller{
         			String labelText = "登录成功！";
         			XK_Prompt.setText(labelText);
         			stage.close();
-        			
+        			try {
+						MainFrame.courseTable = shuhelpapp.XK.getCourseTableArrayList();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        			try {
+						MainFrame.enrollRank = shuhelpapp.XK.getEnrollRankArrayList();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();	
+					}
         		}
         		else if(res.equals("验证码错误！"))
         		{
