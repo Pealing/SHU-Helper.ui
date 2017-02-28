@@ -39,17 +39,16 @@ public class WindowFrame {
 		{
 			stage.initStyle(StageStyle.DECORATED);
 		}
-		stage.show();
 	}
 	public void SetTitle(String name)
 	{
 		 stage.setTitle(name);
 	}
-//	public void Show()
-//	{
+	public void Show()
+	{
 //		System.out.println(FrameName);
-//		stage.show();
-//	}
+		stage.show();
+	}
 //	
 	public void Close()
 	{

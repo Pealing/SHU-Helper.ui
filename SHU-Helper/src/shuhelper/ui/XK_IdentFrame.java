@@ -83,16 +83,10 @@ public class XK_IdentFrame extends Controller{
         			XK_Prompt.setText(labelText);
         			stage.close();
         			try {
-						MainFrame.courseTable = shuhelpapp.XK.getCourseTableArrayList();
-					} catch (Exception e) {
+						shuhelpapp.test.initCourseStatus(shuhelpapp.test.selectedCourse(shuhelpapp.XK));
+					} catch (Exception e1) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-        			try {
-						MainFrame.enrollRank = shuhelpapp.XK.getEnrollRankArrayList();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();	
+						e1.printStackTrace();
 					}
         		}
         		else if(res.equals("—È÷§¬Î¥ÌŒÛ£°"))
@@ -104,9 +98,10 @@ public class XK_IdentFrame extends Controller{
         		{
         			String labelText = "’À∫≈√‹¬Î¥ÌŒÛ«Î÷ÿ–¬ ‰»Î";
         			XK_Prompt.setText(labelText);
-        			XK_Button.getScene().getWindow().hide();
+        			stage.close();
         			try {
 						PromtFrame.Start();
+						PromtFrame.Show();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

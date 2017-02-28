@@ -10,16 +10,18 @@ public class HadClass {
 	private  SimpleStringProperty ClassName;
 	private  SimpleStringProperty TeacherNum;
 	private  SimpleStringProperty TeacherName;
+	private  SimpleStringProperty Time;
 	private  SimpleStringProperty PeopleNum;
 	private  SimpleStringProperty Rank;
 	private  CheckBox ExitClass;
 	
-	public HadClass(String ClassNum, String ClassName, String TeacherNum,String TeacherName,String PeopleNum,String Rank) 
+	public HadClass(String ClassNum, String ClassName, String TeacherNum,String TeacherName,String Time,String PeopleNum,String Rank) 
 	{
 		this.ClassNum = new SimpleStringProperty(ClassNum);
 		this.ClassName = new SimpleStringProperty(ClassName);
 		this.TeacherNum =  new SimpleStringProperty(TeacherNum);
 		this.TeacherName = new SimpleStringProperty(TeacherName);
+		this.Time = new SimpleStringProperty(Time);
 		this.PeopleNum = new SimpleStringProperty(PeopleNum);
 		this.Rank = new SimpleStringProperty(Rank);
 		this.ExitClass = new CheckBox("ÍË¿Î");
@@ -75,6 +77,14 @@ public class HadClass {
 
 	public void setTeacherNum(SimpleStringProperty teacherNum) {
 		TeacherNum = teacherNum;
+	}
+
+	public String getTime() {
+		return Time.get();
+	}
+
+	public void setTime(SimpleStringProperty time) {
+		Time = time;
 	}
 
 

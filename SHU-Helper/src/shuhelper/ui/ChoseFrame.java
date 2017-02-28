@@ -2,6 +2,8 @@ package shuhelper.ui;
 
 import java.io.IOException;
 
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -23,13 +25,26 @@ public class ChoseFrame extends Controller{
 	@FXML
 	public void ChoseAction() throws Exception
 	{
-		String[] termInfo = shuhelpapp.XK.getTermInfo();
-		Firstterm = new String(termInfo[0]);
-		Secondterm = new String(termInfo[1]);
-		FirstChose.setText(Firstterm);
-		SecondChose.setText(Secondterm);
-		stage.setHeight(160);
-		ChosePane.setVisible(true);
+		ChoseFrameTask task = new ChoseFrameTask();
+		waitframe wait = new waitframe(stage);
+		wait.activateProgressBar();
+        
+		Thread th = new Thread(task);
+		th.setDaemon(true);
+		th.start();
+		
+		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+			public void handle(WorkerStateEvent event) {
+				String[] termInfo = task.GetPath();
+				Firstterm = new String(termInfo[0]);
+				Secondterm = new String(termInfo[1]);
+				FirstChose.setText(Firstterm);
+				SecondChose.setText(Secondterm);
+				stage.setHeight(160);
+				ChosePane.setVisible(true);
+				wait.cancelProgressBar();
+			}
+        });
 	}
 	public void FirstAction() throws Exception
 	{
