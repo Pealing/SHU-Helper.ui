@@ -3,6 +3,10 @@ package shuhelper.ui;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.jws.soap.SOAPBinding.Style;
 
@@ -16,6 +20,7 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -31,19 +36,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent; 
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.StageStyle;
 import shuhelper.web.*;
 
 public class MainFrame extends Controller{
-	//验证码窗口
-	static CJ_IdentFrameWindow CJ_IdentFrame;
-	static XK_IdentFrameWindow XK_IdentFrame;
 	
 	@FXML
 	private TabPane ChosePane;
 	
 	@FXML
-	private GridPane XK_Pane,XK_ClassTable;
+	private GridPane XK_ClassTable;
 	//Tab
 	@FXML
 	private Tab CJ_IdentTab, XK_IdentTab;
@@ -53,6 +57,11 @@ public class MainFrame extends Controller{
 	//待选课程、搜索课程、已选课程窗口
 	@FXML
 	private GridPane Wait_Pane,Search_Pane,Had_Pane;
+	
+	//课表颜色
+	public String[] Color = {"#E9CBFA","#D1CBFA","#CBDCFA","#CBF4FA","#CBFAE9","#CBFAD1","#F4FACB","#FAE9CB","#FAD1CB","#FACBF4"};
+	//当前颜色
+	public int colornum = 1;
 	
 	//登录状态
 	private boolean CJ_status = false;
@@ -114,40 +123,52 @@ public class MainFrame extends Controller{
 	@FXML
 	private TableView<WaitClass> WaitTable;
 	@FXML
-	private TableColumn<WaitClass,String> Wait_ClassNum,Wait_ClassName,Wait_Score,
+	private TableColumn<WaitClass,String> Wait_ClassNum,Wait_ClassName,Wait_Score,Wait_TeacherNum,
 			Wait_TeacherName,Wait_Time,Wait_PeopleNum;
 	@FXML
 	private TableColumn<WaitClass,Boolean>Wait_Choice;
-	
-	
-	
-	
-	public MainFrame() throws IOException
-	{
-		CJ_IdentFrame = new CJ_IdentFrameWindow();
-		CJ_IdentFrame.stage.setTitle("CJ_IdentFrame");
-		XK_IdentFrame = new XK_IdentFrameWindow();
-		XK_IdentFrame.stage.setTitle("XK_IdentFrame");
-	}
+
+	// 解析时间的正则模式串
+		private static Pattern pattern = Pattern.compile("\\b(?<day>[一二三四五])(?<from>\\d+)-(?<to>\\d+)\\b");
+
+		/**
+		* 字符串解析为时间
+		* 如"二7~9 三1~2" = (2, 7, 9), (3, 1, 2)
+		* @param time 原始的时间字符串
+		* @return ArrayList of Tuple
+		*/
+		static public ArrayList<Tuple> parseTime(String time) {
+			Matcher matcher = pattern.matcher(time);
+			ArrayList<Tuple> result = new ArrayList<Tuple>();
+			while (matcher.find()) {
+				int day = "一二三四五".indexOf(matcher.group("day")) + 1;
+				int from = Integer.valueOf(matcher.group("from"));
+				int to = Integer.valueOf(matcher.group("to"));
+				result.add(new Tuple(day, from, to));
+			}
+			return result;
+		}
+	//CJ界面操作
 	public void CJ_Offline() throws Exception
 	{
-		try {
-			CJ_status = shuhelpapp.CJ.isLogin();
-		} catch (Exception e) {
-			// Do nothing
-		}
-		if(CJ_status == false)
+//		try {
+//			CJ_status = shuhelpapp.CJ.isLogin();
+//		} catch (Exception e) {
+//			// Do nothing
+//		}
+		if(!shuhelpapp.CJ_Islogin)
 		{
-			XK_IdentFrame.stage.close();
-			CJ_IdentFrame.stage.show();
+			shuhelpapp.XK_IdentFrame.stage.close();
+			shuhelpapp.CJ_IdentFrame.stage.show();
 //			CJ_IdentFrame.Show();
 //			CJ_IdentFrame.stage.setAlwaysOnTop(true);
-			CJ_IdentFrame.stage.setResizable(false);
+			shuhelpapp.CJ_IdentFrame.stage.setResizable(false);
 		}
 	}
-	
+//	XK界面操作
 	public void XK_Offline() throws Exception
 	{
+		
 		if(!term )
 		{
 			WindowFrame chose = new WindowFrame("ChoseFrame",188,40,true);
@@ -163,18 +184,30 @@ public class MainFrame extends Controller{
 		}
 		else
 		{
-			try {
-				XK_status = shuhelpapp.XK.isLogin();
-			} catch (Exception e) {
-				//Do nothing
-			}
-			if(XK_status == false)
+			//如果未登录则显示验证码界面
+			if(!shuhelpapp.XK_Islogin)
 			{
-				CJ_IdentFrame.stage.close();
-				XK_IdentFrame.stage.show();
-				XK_IdentFrame.stage.setResizable(false);
+				shuhelpapp.CJ_IdentFrame.stage.close();
+				shuhelpapp.XK_IdentFrame.stage.show();
+				shuhelpapp.XK_IdentFrame.stage.setResizable(false);
 			}
 		}
+//		else
+//		{
+//			
+//			try {
+//				XK_status = shuhelpapp.XK.isLogin();
+//			} catch (Exception e) { 
+//				//Do nothing
+//			}
+//			if(XK_status == false)
+//			{
+//				System.out.println("222");
+//				shuhelpapp.CJ_IdentFrame.stage.close();
+//				shuhelpapp.XK_IdentFrame.stage.show();
+//				shuhelpapp.XK_IdentFrame.stage.setResizable(false);
+//			}
+//		}
 	}
 	@FXML
 	public void Tabaction() throws Exception
@@ -186,6 +219,7 @@ public class MainFrame extends Controller{
 	{
 		if(XK_IdentTab.isSelected())
 		{
+			
 			XK_Offline();
 		}
 		else if(CJ_IdentTab.isSelected())
@@ -238,28 +272,55 @@ public class MainFrame extends Controller{
 
 		if(!isrank )
 		{
-			enrollRank = shuhelpapp.XK.getEnrollRankArrayList();
-			courseTable = shuhelpapp.XK.getCourseTableArrayList();
-			for (String[] h:courseTable)
-			{	
 			
-				for(String[] i:shuhelpapp.test.conflict.getClassTime(h[5]))
-				{
-					System.out.println(i);
-				}
-				System.out.println("\n");
-			}
 			Had_SetTable();
 			isrank = true;
 		}
 	}
 	
+	//待选课程界面：确认选课
 	@FXML
-	//将待选课程选课
-	public void Wait_Choice_Buttonaction(ActionEvent e)
+	public void ChoseCourseaction() throws Exception
 	{
-		
+		for(WaitClass h:Waitdata)
+		{
+			if(h.getWait_Choice().isSelected())
+			{
+				String x = shuhelpapp.XK.enrollCourse(h.getWait_ClassNum(),h.getWait_TeacherNum());
+				if(!x.equals("OK"))
+				{
+					shuhelpapp.PromtFrame.controller.label.setText(x);
+					shuhelpapp.PromtFrame.stage.show();
+					wait(5000);
+					System.out.println("123");
+					shuhelpapp.PromtFrame.stage.close();
+				}
+			}
+		}
 	}
+	//待选课程界面：刷新课表
+	@FXML
+	public void GetCourseaction()
+	{
+		//画课表
+		for (String[] h:courseTable)
+		{	
+		
+			ArrayList<Tuple> i = parseTime(h[5]);
+			for (Tuple k:i)
+			{
+				Label x = new Label(h[1]);
+				x.setStyle("-fx-background-color:" + Color[(colornum+10)%10] + ";");
+				x.setAlignment(Pos.CENTER);
+				x.setPrefWidth(100);
+				x.setPrefHeight(40 * (k.to - k.from + 1 ));
+				XK_ClassTable.add(x,k.day,k.from);
+				GridPane.setRowSpan(x, k.to - k.from+1);
+			}
+			colornum ++ ;
+		}
+	}
+	
 	@FXML
 	//查询课程
 	public void Seach_Buttonaction(ActionEvent e) throws Exception
@@ -277,13 +338,26 @@ public class MainFrame extends Controller{
 		Boolean s_noon = S_noon.isSelected();
 		Boolean s_friday = S_Friday.isSelected();
 		
-		queryCourse = shuhelpapp.test.testSchedule(shuhelpapp.XK,s_classnum,s_time,s_teachername,s_score,s_school,s_morning,s_noon,s_friday);
-		Search_SetTable();
+		SearchTask task = new SearchTask(s_classnum,s_time,s_teachername,s_score,s_school,s_morning,s_noon,s_friday);
+		waitframe wait = new waitframe(stage);
+		wait.activateProgressBar();
+        
+		Thread th = new Thread(task);
+		th.setDaemon(true);
+		th.start();
+		
+		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+			public void handle(WorkerStateEvent event) {
+				queryCourse = task.GetPath();
+				Search_SetTable();
+				wait.cancelProgressBar();
+			}
+        });
 	}
 	
 	@FXML
 	//加入待选课程
-	public void Search_Choice_Buttonaction(ActionEvent e)
+	public void Search_Choice_Buttonaction(ActionEvent e) throws InterruptedException
 	{
 		int i =0;
 		for (SearchClass h : Searchdata)
@@ -291,11 +365,35 @@ public class MainFrame extends Controller{
 			if(h.getSearch_Choice().isSelected() )
 			{
 				waitcourse = shuhelpapp.test.saveEleCourse(queryCourse, i, waitcourse);
-				System.out.println(shuhelpapp.test.flagClassTime);
-				System.out.println(shuhelpapp.test.flagCourse);
-				if(shuhelpapp.test.flagClassTime == "" && shuhelpapp.test.flagCourse == "")
+				System.out.println("1:" + shuhelpapp.test.flagClassTime);
+				System.out.println("1:" + shuhelpapp.test.flagCourse);
+				if(shuhelpapp.test.flagClassTime.equals("课时冲突！"))
 				{
-					System.out.println("yes");
+					shuhelpapp.PromtFrame.controller.label.setText("课时冲突，请选择其他时间");
+					shuhelpapp.PromtFrame.stage.show();
+				   
+				}
+				if(!shuhelpapp.test.flagCourse.equals(""))
+				{
+					shuhelpapp.PromtFrame.controller.label.setText("重复选择该课程");
+					shuhelpapp.PromtFrame.stage.show();
+				}
+				
+				if((!shuhelpapp.test.flagClassTime.equals("课时冲突！") )&& shuhelpapp.test.flagCourse.equals(""))
+				{
+					//把课程画入课表
+					ArrayList<Tuple> ii = parseTime(queryCourse.get(i)[5]);
+					for (Tuple k:ii)
+					{
+						Label x = new Label(queryCourse.get(i)[1]);
+						x.setStyle("-fx-background-color:" + Color[(colornum+10)%10] + ";");
+						x.setAlignment(Pos.CENTER);
+						x.setPrefWidth(100);
+						x.setPrefHeight(40 * (k.to - k.from + 1 ));
+						XK_ClassTable.add(x,k.day,k.from);
+						GridPane.setRowSpan(x, k.to - k.from+1);
+					}
+					colornum ++ ;
 				}
 				
 			}
@@ -309,18 +407,28 @@ public class MainFrame extends Controller{
 	public void ExitButtonaction(ActionEvent e) throws Exception
 	{
 		String TheStatus = shuhelpapp.XK.getEnrollStatus();
+
 		if(TheStatus.equals("OK"))
 		{
+			String Exit_status;//退课状态
 			for (HadClass h : Haddata)
 			{
 				if(h.getExitClass().isSelected())
 				{
-					String x = shuhelpapp.XK.returnCourse(h.getClassNum(), h.getTeacherNum());
+					Exit_status = shuhelpapp.XK.returnCourse(h.getClassNum(), h.getTeacherNum());
 				}
 			}
+			enrollRank = shuhelpapp.XK.getEnrollRankArrayList();
+			courseTable = shuhelpapp.XK.getCourseTableArrayList();
 			Had_SetTable();
 		}
+		else
+		{
+			shuhelpapp.PromtFrame.controller.label.setText(TheStatus);
+			shuhelpapp.PromtFrame.stage.show();
+		}
 	}
+	//绘制已选课程表
 	public void Had_SetTable()
 	{
 		Haddata.clear();
@@ -339,6 +447,7 @@ public class MainFrame extends Controller{
 		}
 		RankTable.setItems(Haddata);
 	}
+	//绘制搜索表格
 	public void Search_SetTable()
 	{
 		Searchdata.clear();
@@ -360,12 +469,14 @@ public class MainFrame extends Controller{
 		}
 		SearchTable.setItems(Searchdata);
 	}
+	//绘制待课程表
 	public void Wait_SetTable()
 	{
 		Waitdata.clear();
 		Wait_ClassNum.setCellValueFactory(new PropertyValueFactory<>("Wait_ClassNum"));
 		Wait_ClassName.setCellValueFactory(new PropertyValueFactory<>("Wait_ClassName"));
 		Wait_Score.setCellValueFactory(new PropertyValueFactory<>("Wait_Score"));
+		Wait_TeacherNum.setCellValueFactory(new PropertyValueFactory<>("Wait_TeacherNum"));
 		Wait_TeacherName.setCellValueFactory(new PropertyValueFactory<>("Wait_TeacherName"));
 		Wait_Time.setCellValueFactory(new PropertyValueFactory<>("Wait_Time"));
 		Wait_PeopleNum.setCellValueFactory(new PropertyValueFactory<>("Wait_PeopleNum"));
@@ -374,13 +485,25 @@ public class MainFrame extends Controller{
 		for(String[] row :waitcourse)
 		{
 			String People = row[7] + "/" + row[8];
-			Waitdata.add(new WaitClass(row[0],row[1],row[2],row[4],row[5],People));
+			Waitdata.add(new WaitClass(row[0],row[1],row[2],row[3],row[4],row[5],People));
 		}
 		WaitTable.setItems(Waitdata);
 	}
 	//绘制课表
 	public void DrawCourseTable()
 	{
-		
+		String[] c = {"#E8E8E8","#F9F6F7"};
+		for(int j=1;j<14;j++)
+		{
+			for(int i=1;i<6;i++)
+			{
+				Label x = new Label("");
+				x.setPrefWidth(100);
+				x.setPrefHeight(40);
+				x.setStyle("-fx-background-color:" + c[(j&1)^(i&1)] + ";");
+				XK_ClassTable.add(x,i,j);
+				
+			}
+		}
 	}
 }

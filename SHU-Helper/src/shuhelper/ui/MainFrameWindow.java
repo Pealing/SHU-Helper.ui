@@ -17,13 +17,13 @@ public class MainFrameWindow{
 	{
 		FXMLLoader fxmlloader = new FXMLLoader(getClass().getResource("MainFrame.fxml"));
 		Parent root = fxmlloader.load();
-		Scene scene = new Scene(root,687,481);
+		Scene scene = new Scene(root,1200,600);
 		controller = fxmlloader.getController(); 
 		controller.setStage(stage);
 	    controller.setScene(scene);
 		stage.setScene(scene);
 		stage.initStyle(StageStyle.DECORATED);
-		stage.show();
+		controller.DrawCourseTable();
 	}
 
 	

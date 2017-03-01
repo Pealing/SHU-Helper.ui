@@ -16,8 +16,6 @@ import javafx.stage.StageStyle;
 
 public class XK_IdentFrame extends Controller{
 
-	private String username = LoginFrame.username;
-	private String password = LoginFrame.password;
 	//验证码
 	private String XK_identify;
 	//验证码地址
@@ -35,12 +33,8 @@ public class XK_IdentFrame extends Controller{
 	@FXML
 	private Label XK_Prompt;
 	
-	//错误窗口
-	private WindowFrame PromtFrame = new WindowFrame("PromtFrame",300,90,true);
-	
-	//更换验证码	
-	@FXML
-	public void XK_ChangeImage(MouseEvent e) throws IOException
+
+	private void Change()
 	{
 		XKvalidate task = new XKvalidate();
 		waitframe wait = new waitframe(stage);
@@ -59,12 +53,18 @@ public class XK_IdentFrame extends Controller{
             }
         });
 	}
+	//更换验证码	
+	@FXML
+	public void XK_ChangeImage(MouseEvent e) throws IOException
+	{
+		Change();
+	}
 	
 	@FXML
 	public void XK_ButtonAction(ActionEvent e) throws Exception
 	{
 		XK_identify = XK_Text.getText();
-		XKlogintask task = new XKlogintask(username,password,XK_identify);
+		XKlogintask task = new XKlogintask(LoginFrame.username,LoginFrame.password,XK_identify);
 		waitframe wait = new waitframe(stage);
 		wait.activateProgressBar();
         
@@ -74,39 +74,63 @@ public class XK_IdentFrame extends Controller{
 		
 		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             public void handle(WorkerStateEvent event) {
+            	//登录XK线程
             	String res = task.GetPath();
-            	wait.cancelProgressBar();
             	System.out.println(res);
         		if(res.equals("OK"))
         		{
         			String labelText = "登录成功！";
+        			//登录成功更新XK登录状态
+        			shuhelpapp.XK_Islogin = true;
         			XK_Prompt.setText(labelText);
         			stage.close();
+        			//更新当前课表状态
         			try {
 						shuhelpapp.test.initCourseStatus(shuhelpapp.test.selectedCourse(shuhelpapp.XK));
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-        		}
-        		else if(res.equals("验证码错误！"))
-        		{
-        			String labelText = "验证码不正确请重新输入";
-        			XK_Prompt.setText(labelText);
-        		}
-        		else
-        		{
-        			String labelText = "账号密码错误请重新输入";
-        			XK_Prompt.setText(labelText);
-        			stage.close();
+        			//获取已选课程和排名
         			try {
-						PromtFrame.Start();
-						PromtFrame.Show();
+						shuhelpapp.MainFrame.controller.enrollRank = shuhelpapp.XK.getEnrollRankArrayList();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-        			PromtFrame.SetTitle("SHU-Helper_Error");
+        			//获取已选课程信息
+        			try {
+						shuhelpapp.MainFrame.controller.courseTable = shuhelpapp.XK.getCourseTableArrayList();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        			//初始化课表
+        			wait.cancelProgressBar();
+        		}
+        		else if(res.equals("验证码错误！"))
+        		{
+        			wait.cancelProgressBar();
+        			String labelText = "验证码不正确请重新输入";
+        			XK_Prompt.setText(labelText);
+        			Change();
+        		}
+        		else
+        		{
+        			wait.cancelProgressBar();
+        			String labelText = "账号密码错误请重新输入";
+        			//更新验证码
+        			Change();
+        			stage.close();
+        			shuhelpapp.MainFrame.stage.close();
+        			XK_Prompt.setText(labelText);
+        			try {
+        				shuhelpapp.PromtFrame.controller.label.setText("账号密码错误，请重新输入");
+						shuhelpapp.PromtFrame.stage.show();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
         		}
             }
         });

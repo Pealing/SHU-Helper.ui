@@ -50,17 +50,17 @@ public class ChoseFrame extends Controller{
 	{
 		shuhelpapp.XK.setTerm(0);
 		stage.close();
-		MainFrame.CJ_IdentFrame.stage.close();
-		MainFrame.XK_IdentFrame.stage.show();
-		MainFrame.XK_IdentFrame.stage.setResizable(false);
+		shuhelpapp.CJ_IdentFrame.stage.close();
+		shuhelpapp.XK_IdentFrame.stage.show();
+		shuhelpapp.XK_IdentFrame.stage.setResizable(false);
 	}
 	public void SecondAction() throws Exception
 	{
 		shuhelpapp.XK.setTerm(1);
 		stage.close();
-		MainFrame.CJ_IdentFrame.stage.close();
-		MainFrame.XK_IdentFrame.stage.show();
-		MainFrame.XK_IdentFrame.stage.setResizable(false);
+		shuhelpapp.CJ_IdentFrame.stage.close();
+		shuhelpapp.XK_IdentFrame.stage.show();
+		shuhelpapp.XK_IdentFrame.stage.setResizable(false);
 	}
 	public void SureAction()
 	{

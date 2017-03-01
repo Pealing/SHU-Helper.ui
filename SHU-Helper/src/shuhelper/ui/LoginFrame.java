@@ -35,7 +35,7 @@ public class LoginFrame extends Controller{
 	@FXML
 	private ImageView Logo;
 	
-	MainFrameWindow MainFrame ;
+	
 	
 	
 	public LoginFrame()
@@ -57,8 +57,7 @@ public class LoginFrame extends Controller{
 		GetText();
 		LoginButton.getScene().getWindow().hide();
 		stage.close();
-		MainFrame = new MainFrameWindow();
-		MainFrame.stage.show();
+		shuhelpapp.MainFrame.stage.show();
 		
 	}
 	@FXML

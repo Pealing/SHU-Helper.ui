@@ -15,8 +15,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class CJ_IdentFrame extends Controller{
-	private String username = LoginFrame.username;
-	private String password = LoginFrame.password;
 	//验证码
 	private String CJ_identify;
 	//验证码地址
@@ -62,7 +60,7 @@ public class CJ_IdentFrame extends Controller{
 	public void CJ_ButtonAction(ActionEvent e) throws Exception
 	{
 		CJ_identify = CJ_Text.getText();
-		CJlogintask task = new CJlogintask(username,password,CJ_identify);
+		CJlogintask task = new CJlogintask(LoginFrame.username,LoginFrame.password,CJ_identify);
 		waitframe wait = new waitframe(stage);
 		wait.activateProgressBar();
         
@@ -77,6 +75,7 @@ public class CJ_IdentFrame extends Controller{
         		if(res == "OK")
         		{
         			String labelText = "登录成功！";
+        			shuhelpapp.CJ_Islogin = true;
         			CJ_Prompt.setText(labelText);
         			stage.close();
         			
@@ -89,10 +88,12 @@ public class CJ_IdentFrame extends Controller{
         		else
         		{
         			String labelText = "账号密码错误请重新输入";
+        			shuhelpapp.MainFrame.stage.close();
         			CJ_Prompt.setText(labelText);
         			stage.close();
         			try {
-						PromtFrame.Start();
+        				shuhelpapp.PromtFrame.controller.label.setText("账号密码错误，请重新输入");
+						shuhelpapp.PromtFrame.stage.show();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

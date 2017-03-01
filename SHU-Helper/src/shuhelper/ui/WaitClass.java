@@ -7,16 +7,18 @@ public class WaitClass {
 	private SimpleStringProperty Wait_ClassNum;
 	private SimpleStringProperty Wait_ClassName;
 	private SimpleStringProperty Wait_Score;
+	private SimpleStringProperty Wait_TeacherNum;
 	private SimpleStringProperty Wait_TeacherName;
 	private SimpleStringProperty Wait_Time;
 	private SimpleStringProperty Wait_PeopleNum;
 	private CheckBox Wait_Choice;
 	
-	public WaitClass(String classnum,String classname,String score,String teachername,String time,String peoplenum)
+	public WaitClass(String classnum,String classname,String score,String teachernum,String teachername,String time,String peoplenum)
 	{
 		Wait_ClassNum = new SimpleStringProperty(classnum);
 		Wait_ClassName = new SimpleStringProperty(classname);
 		Wait_Score = new SimpleStringProperty(score);
+		Wait_TeacherNum = new SimpleStringProperty(teachernum);
 		Wait_TeacherName = new SimpleStringProperty(teachername);
 		Wait_Time = new SimpleStringProperty(time);
 		Wait_PeopleNum = new SimpleStringProperty(peoplenum);
@@ -77,6 +79,14 @@ public class WaitClass {
 
 	public void setWait_Choice(CheckBox wait_Choice) {
 		Wait_Choice = wait_Choice;
+	}
+
+	public String getWait_TeacherNum() {
+		return Wait_TeacherNum.get();
+	}
+
+	public void setWait_TeacherNum(SimpleStringProperty wait_TeacherNum) {
+		Wait_TeacherNum = wait_TeacherNum;
 	}
 
 }

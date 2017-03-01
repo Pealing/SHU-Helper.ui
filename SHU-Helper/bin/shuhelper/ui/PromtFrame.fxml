@@ -18,7 +18,7 @@
     <RowConstraints maxHeight="159.80001831054688" minHeight="6.399993896484375" percentHeight="12.0" prefHeight="9.199981689453125" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label alignment="CENTER" prefHeight="37.0" prefWidth="226.0" text="账号或密码错误，请重新输入" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      <Label fx:id="label" alignment="CENTER" prefHeight="37.0" prefWidth="226.0" text="账号或密码错误，请重新输入" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <font>
             <Font size="16.0" />
          </font>
