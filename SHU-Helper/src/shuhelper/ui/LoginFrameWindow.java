@@ -5,6 +5,7 @@ import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -23,5 +24,8 @@ public class LoginFrameWindow {
 	    controller.setScene(scene);
 		stage.setScene(scene);
 		stage.initStyle(StageStyle.DECORATED);
+		Image img = new Image("file:back.jpg");
+		stage.setTitle("SHU-Help");
+		stage.getIcons().add(img);
 	}
 }

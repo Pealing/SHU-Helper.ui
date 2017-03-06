@@ -8,6 +8,10 @@
 	<classpathentry kind="lib" path="E:/Java Workspace/SHUHELP/lib/httpcore-4.4.4.jar"/>
 	<classpathentry kind="lib" path="E:/Java Workspace/SHUHELP/lib/jsoup-1.10.2.jar"/>
 	<classpathentry kind="lib" path="E:/Java Workspace/SHUHELP/lib/SHU-WebAPI-2.0.jar"/>
-	<classpathentry kind="lib" path="E:/Java Workspace/SHUHELP/lib/schedule.jar"/>
+	<classpathentry kind="lib" path="E:/Java Workspace/SHUHELP/lib/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="E:/Java Workspace/SHUHELP/lib/jcommon-1.0.23.jar"/>
+	<classpathentry kind="lib" path="E:/Java Workspace/SHUHELP/lib/shuheloer-analyse.jar"/>
+	<classpathentry kind="lib" path="E:/Java Workspace/SHUHELP/lib/shuheloer-schedule.jar"/>
+	<classpathentry kind="lib" path="E:/Java Workspace/SHUHELP/lib/shuheloer-visualize.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

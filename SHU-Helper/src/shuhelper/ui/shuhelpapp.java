@@ -5,10 +5,11 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import shuhelper.scheduing.Schedule;
-import shuhelper.scheduing.TestSchedule;
+import shuhelper.schedule.Schedule;
+import shuhelper.schedule.TestSchedule;
 import shuhelper.web.*;
 
 public class shuhelpapp extends Application{
@@ -52,7 +53,7 @@ public class shuhelpapp extends Application{
 		XK_IdentFrame.stage.setTitle("XK_IdentFrame");
 		
 		PromtFrame = new PromtFrameWindow();
-
+		Login.stage.setResizable(false);
 		Login.stage.show();
 	}
 }

@@ -76,7 +76,6 @@ public class XK_IdentFrame extends Controller{
             public void handle(WorkerStateEvent event) {
             	//登录XK线程
             	String res = task.GetPath();
-            	System.out.println(res);
         		if(res.equals("OK"))
         		{
         			String labelText = "登录成功！";
@@ -105,7 +104,6 @@ public class XK_IdentFrame extends Controller{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-        			//初始化课表
         			wait.cancelProgressBar();
         		}
         		else if(res.equals("验证码错误！"))

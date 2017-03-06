@@ -21,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -39,24 +40,29 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.StageStyle;
+import shuhelper.analyse.Analyse;
+import shuhelper.visualize.Visualizer;
 import shuhelper.web.*;
 
 public class MainFrame extends Controller{
-	
-	@FXML
-	private TabPane ChosePane;
 	
 	@FXML
 	private GridPane XK_ClassTable;
 	//Tab
 	@FXML
 	private Tab CJ_IdentTab, XK_IdentTab;
-	
-	@FXML
-	private Button CJ_Button,XK_Button;
-	//待选课程、搜索课程、已选课程窗口
+
+	//XK:待选课程、搜索课程、已选课程窗口
 	@FXML
 	private GridPane Wait_Pane,Search_Pane,Had_Pane;
+	
+	//CJ:加载成绩分析图片
+	@FXML
+	private ImageView ScorePicture;
+	
+	//分析类
+	public static Analyse ana;
+	
 	
 	//课表颜色
 	public String[] Color = {"#E9CBFA","#D1CBFA","#CBDCFA","#CBF4FA","#CBFAE9","#CBFAD1","#F4FACB","#FAE9CB","#FAD1CB","#FACBF4"};
@@ -73,31 +79,31 @@ public class MainFrame extends Controller{
 	private boolean isrank = false;
 	//第一次登录
 	private boolean FirstLogin = true;
+	//是否已经加载过图片
+	private boolean DownPicture = false;
+	//CJ：表格图片地址
+	private String filename1,filename2,filename3;
 	
-	
-	// 已选课程
+//已选课程{
+	//数据集合：
+	//已选课程
 	public static ArrayList<String[]> courseTable = new ArrayList<String[]>();
-			
 	// 选课排名
 	public static ArrayList<String[]> enrollRank = new ArrayList<String[]>();
-	
-	//待选课程
-	public static ArrayList<String[]>waitcourse = new ArrayList<String[]>();
-	
-	//查询课程
-	public static ArrayList<String[]> queryCourse = new ArrayList<String[]>();
-	
-	//数据集合：已选课程
 	ObservableList<HadClass> Haddata = FXCollections.observableArrayList();
-	//课程表格：已选课程
+	//课程表格：
 	@FXML
 	private TableView<HadClass> RankTable;
 	@FXML
 	private TableColumn<HadClass,String> ClassNum,ClassName,TeacherNum,TeacherName,Time,PeopleNum,Rank;
 	@FXML
 	private TableColumn<HadClass,Boolean>ExitClass;
+//}已选课程
+
+//	查询课程{
 	
-	//数据集合：查询课程
+	//数据集合
+	public static ArrayList<String[]> queryCourse = new ArrayList<String[]>();	
 	ObservableList<SearchClass> Searchdata = FXCollections.observableArrayList();
 	//查询内容
 	@FXML
@@ -116,8 +122,11 @@ public class MainFrame extends Controller{
 			Search_PeopleNum;
 	@FXML
 	private TableColumn<SearchClass,Boolean>Search_Choice;
-	
+//}查询课程
+
+//待选课程{
 	//数据集合：待选课程
+	public static ArrayList<String[]>waitcourse = new ArrayList<String[]>();
 	ObservableList<WaitClass> Waitdata = FXCollections.observableArrayList();
 	//课程表格：待选课程
 	@FXML
@@ -126,8 +135,19 @@ public class MainFrame extends Controller{
 	private TableColumn<WaitClass,String> Wait_ClassNum,Wait_ClassName,Wait_Score,Wait_TeacherNum,
 			Wait_TeacherName,Wait_Time,Wait_PeopleNum;
 	@FXML
-	private TableColumn<WaitClass,Boolean>Wait_Choice;
-
+	private TableColumn<WaitClass,Boolean>Wait_Choice,Wait_Delete;
+//}待选课程
+	
+//成绩大表{
+	//数据集合：成绩大表
+	public static ArrayList<String[]> scoreSummary  = new ArrayList<String[]>();
+	ObservableList<ScoreClass> Scoredata = FXCollections.observableArrayList();
+	@FXML
+	private TableView<ScoreClass> ScoreTable;
+	@FXML
+	private TableColumn<ScoreClass,String> CJ_ClassNum,CJ_ClassName,CJ_Credit,CJ_Score,CJ_GPA;
+//}成绩大表
+	
 	// 解析时间的正则模式串
 		private static Pattern pattern = Pattern.compile("\\b(?<day>[一二三四五])(?<from>\\d+)-(?<to>\\d+)\\b");
 
@@ -192,22 +212,6 @@ public class MainFrame extends Controller{
 				shuhelpapp.XK_IdentFrame.stage.setResizable(false);
 			}
 		}
-//		else
-//		{
-//			
-//			try {
-//				XK_status = shuhelpapp.XK.isLogin();
-//			} catch (Exception e) { 
-//				//Do nothing
-//			}
-//			if(XK_status == false)
-//			{
-//				System.out.println("222");
-//				shuhelpapp.CJ_IdentFrame.stage.close();
-//				shuhelpapp.XK_IdentFrame.stage.show();
-//				shuhelpapp.XK_IdentFrame.stage.setResizable(false);
-//			}
-//		}
 	}
 	@FXML
 	public void Tabaction() throws Exception
@@ -240,6 +244,9 @@ public class MainFrame extends Controller{
 			CJ_Offline();
 		}
 	}
+	
+//	选课界面事件
+//	{
 	@FXML
 	public void Wait_Buttonaction(ActionEvent e)
 	{
@@ -292,17 +299,112 @@ public class MainFrame extends Controller{
 					shuhelpapp.PromtFrame.controller.label.setText(x);
 					shuhelpapp.PromtFrame.stage.show();
 					wait(5000);
-					System.out.println("123");
 					shuhelpapp.PromtFrame.stage.close();
 				}
 			}
 		}
+		//获取已选课程和排名
+		try {
+			shuhelpapp.MainFrame.controller.enrollRank = shuhelpapp.XK.getEnrollRankArrayList();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//获取已选课程信息
+		try {
+			shuhelpapp.MainFrame.controller.courseTable = shuhelpapp.XK.getCourseTableArrayList();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	//待选课程界面：删除待选课程
+	public void WaitDeleteaction()
+	{
+		Boolean isdel = false;
+		ArrayList<int[]> Index = new ArrayList<int[]>();
+		int i = 0;
+		for(WaitClass h:Waitdata)
+		{
+			if(h.getWait_Delete().isSelected())
+			{			
+				isdel = true;
+				int[] k = {i};
+				Index.add(k);
+				i++;
+			}
+		}
+		if(isdel)
+		{
+//			ObservableList<Node> childrens = XK_ClassTable.getChildren();
+//			ArrayList<String[]>ID = new ArrayList<String[]>();
+			
+			XK_ClassTable.getChildren().clear();
+			DrawCourseTable();
+			for (int[] k :Index)
+			{
+//				ArrayList<Tuple> ii = parseTime(waitcourse.get(k[0])[5]);
+//				for (Tuple time:ii)
+//				{
+//					String[] str = {""+time.day + time.from};
+//					ID.add(str);
+//				}
+				waitcourse.remove(k[0]);
+				Waitdata.remove(k[0]);
+			}
+//			for (Node node : childrens) 
+//			{
+//				for (String[] str : ID)
+//				{
+//					if(node.getId() == str[0])
+//					{
+//						XK_ClassTable.clearConstraints(node);;
+//					}
+//				}
+//			}
+			//把课程画入课表
+			for (int i1 = 0;i1<waitcourse.size();i1++)
+			{
+				ArrayList<Tuple> ii = parseTime(waitcourse.get(i1)[5]);
+				for (Tuple k:ii)
+				{
+					Label x = new Label(waitcourse.get(i1)[1]);
+					x.setStyle("-fx-background-color:" + Color[(colornum+10)%10] + ";");
+					x.setAlignment(Pos.CENTER);
+					x.setPrefWidth(100);
+					x.setPrefHeight(40 * (k.to - k.from + 1 ));
+					XK_ClassTable.add(x,k.day,k.from);
+					GridPane.setRowSpan(x, k.to - k.from+1);
+				}
+			}
+			Wait_SetTable();
+			GetCourseaction();
+		}
+		
 	}
 	//待选课程界面：刷新课表
 	@FXML
 	public void GetCourseaction()
 	{
-		//画课表
+		//输入课表文字
+		String[] num = {"星期一","星期二","星期三","星期四","星期五"};
+		for(int i=1;i<6;i++)
+		{
+			Label x = new Label(num[i-1]);
+			x.setAlignment(Pos.CENTER);
+			x.setPrefWidth(100);
+			x.setPrefHeight(40);
+			XK_ClassTable.add(x,i,0);
+		}
+		for (int i = 1;i<14;i++)
+		{
+			Label x = new Label("" + i);
+			x.setAlignment(Pos.CENTER);
+			x.setPrefWidth(100);
+			x.setPrefHeight(40);
+			XK_ClassTable.add(x,0,i);
+		}
+		//画表格颜色
 		for (String[] h:courseTable)
 		{	
 		
@@ -365,8 +467,6 @@ public class MainFrame extends Controller{
 			if(h.getSearch_Choice().isSelected() )
 			{
 				waitcourse = shuhelpapp.test.saveEleCourse(queryCourse, i, waitcourse);
-				System.out.println("1:" + shuhelpapp.test.flagClassTime);
-				System.out.println("1:" + shuhelpapp.test.flagCourse);
 				if(shuhelpapp.test.flagClassTime.equals("课时冲突！"))
 				{
 					shuhelpapp.PromtFrame.controller.label.setText("课时冲突，请选择其他时间");
@@ -386,6 +486,7 @@ public class MainFrame extends Controller{
 					for (Tuple k:ii)
 					{
 						Label x = new Label(queryCourse.get(i)[1]);
+						x.setId(""+ k.day + k.from);
 						x.setStyle("-fx-background-color:" + Color[(colornum+10)%10] + ";");
 						x.setAlignment(Pos.CENTER);
 						x.setPrefWidth(100);
@@ -465,7 +566,7 @@ public class MainFrame extends Controller{
 		for(String[] row :queryCourse)
 		{
 			String People = row[7] + "/" + row[8];
-			Searchdata.add(new SearchClass(row[0],row[1],row[2],row[3],row[4],row[5],People,row[9],row[10]));
+			Searchdata.add(new SearchClass(row[0],row[1],row[2],row[3],row[4],row[5],row[9],row[10],People));
 		}
 		SearchTable.setItems(Searchdata);
 	}
@@ -481,6 +582,7 @@ public class MainFrame extends Controller{
 		Wait_Time.setCellValueFactory(new PropertyValueFactory<>("Wait_Time"));
 		Wait_PeopleNum.setCellValueFactory(new PropertyValueFactory<>("Wait_PeopleNum"));
 		Wait_Choice.setCellValueFactory(new PropertyValueFactory<WaitClass,Boolean>("Wait_Choice"));
+		Wait_Delete.setCellValueFactory(new PropertyValueFactory<WaitClass,Boolean>("Wait_Delete"));
 		
 		for(String[] row :waitcourse)
 		{
@@ -505,5 +607,63 @@ public class MainFrame extends Controller{
 				
 			}
 		}
+	}
+//	} 选课界面事件
+	
+//教务处界面事件{
+	public void AddPicture() throws Exception
+	{
+		filename1 = Visualizer.getGPAChart(ana);
+		filename2 = Visualizer.getScoreChart(shuhelpapp.CJ, "GPA");
+		filename3 = Visualizer.getScoreChart(shuhelpapp.CJ, "Score");
+		DownPicture = true;
+	}
+	@FXML
+	public void GPAaction() throws Exception
+	{
+		//绩点分布
+		if(DownPicture == false)
+		{
+			AddPicture();
+		}
+		Image img = new Image("file:" + filename1);
+		ScorePicture.setImage(img);
+	}
+	@FXML
+	public void ArgScoreaction() throws Exception
+	{
+		//平均成绩
+		if(DownPicture == false)
+		{
+			AddPicture();
+		}
+		Image img = new Image("file:" + filename3);
+		ScorePicture.setImage(img);
+	}
+	@FXML
+	public void ArgGPAaction() throws Exception
+	{
+		//平均绩点
+		if(DownPicture == false)
+		{
+			AddPicture();
+		}
+		Image img = new Image("file:" + filename2);
+		ScorePicture.setImage(img);
+	}
+	public void Score_SetTable()
+	{
+		//添加成绩大表
+		CJ_ClassNum.setCellValueFactory(new PropertyValueFactory<>("CJ_ClassNum"));
+		CJ_ClassName.setCellValueFactory(new PropertyValueFactory<>("CJ_ClassName"));
+		CJ_Score.setCellValueFactory(new PropertyValueFactory<>("CJ_Score"));
+		CJ_GPA.setCellValueFactory(new PropertyValueFactory<>("CJ_GPA"));
+		CJ_Credit.setCellValueFactory(new PropertyValueFactory<>("CJ_Credit"));
+		
+		for(String[] row :scoreSummary )
+		{
+			Scoredata.add(new ScoreClass(row[0],row[1],row[2],row[3],row[4]));
+		}
+		ScoreTable.setItems(Scoredata);
 	}
 }

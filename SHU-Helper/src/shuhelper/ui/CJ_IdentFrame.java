@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import shuhelper.analyse.Analyse;
 
 public class CJ_IdentFrame extends Controller{
 	//验证码
@@ -61,6 +62,7 @@ public class CJ_IdentFrame extends Controller{
 	{
 		CJ_identify = CJ_Text.getText();
 		CJlogintask task = new CJlogintask(LoginFrame.username,LoginFrame.password,CJ_identify);
+		//数据加载窗口
 		waitframe wait = new waitframe(stage);
 		wait.activateProgressBar();
         
@@ -71,22 +73,32 @@ public class CJ_IdentFrame extends Controller{
         task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             public void handle(WorkerStateEvent event) {
             	String res = task.GetPath();
-            	wait.cancelProgressBar();
         		if(res == "OK")
         		{
         			String labelText = "登录成功！";
         			shuhelpapp.CJ_Islogin = true;
         			CJ_Prompt.setText(labelText);
         			stage.close();
-        			
+        			try {
+        				//获取成绩大表内容
+						shuhelpapp.MainFrame.controller.scoreSummary = shuhelpapp.CJ.getScoreSummaryArrayList();
+						shuhelpapp.MainFrame.controller.Score_SetTable();
+						shuhelpapp.MainFrame.controller.ana = new Analyse(shuhelpapp.MainFrame.controller.scoreSummary);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                	wait.cancelProgressBar();
         		}
         		else if(res.compareTo("提供的验证码不正确！") == 0)
         		{
+                	wait.cancelProgressBar();
         			String labelText = "验证码不正确请重新输入";
         			CJ_Prompt.setText(labelText);
         		}
         		else
         		{
+                	wait.cancelProgressBar();
         			String labelText = "账号密码错误请重新输入";
         			shuhelpapp.MainFrame.stage.close();
         			CJ_Prompt.setText(labelText);

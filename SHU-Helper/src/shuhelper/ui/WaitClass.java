@@ -11,7 +11,7 @@ public class WaitClass {
 	private SimpleStringProperty Wait_TeacherName;
 	private SimpleStringProperty Wait_Time;
 	private SimpleStringProperty Wait_PeopleNum;
-	private CheckBox Wait_Choice;
+	private CheckBox Wait_Choice,Wait_Delete;
 	
 	public WaitClass(String classnum,String classname,String score,String teachernum,String teachername,String time,String peoplenum)
 	{
@@ -22,7 +22,8 @@ public class WaitClass {
 		Wait_TeacherName = new SimpleStringProperty(teachername);
 		Wait_Time = new SimpleStringProperty(time);
 		Wait_PeopleNum = new SimpleStringProperty(peoplenum);
-		Wait_Choice = new CheckBox ("Ñ¡Ôñ¿Î³Ì");
+		Wait_Choice = new CheckBox ("Ñ¡Ôñ");
+		Wait_Delete = new CheckBox ("É¾³ý");
 	}
 
 	public String getWait_ClassNum() {
@@ -87,6 +88,14 @@ public class WaitClass {
 
 	public void setWait_TeacherNum(SimpleStringProperty wait_TeacherNum) {
 		Wait_TeacherNum = wait_TeacherNum;
+	}
+
+	public CheckBox getWait_Delete() {
+		return Wait_Delete;
+	}
+
+	public void setWait_Delete(CheckBox wait_Delete) {
+		Wait_Delete = wait_Delete;
 	}
 
 }
